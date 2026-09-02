@@ -145,6 +145,25 @@ button { font: inherit; color: inherit; background: none; border: 0; }
 
 .nav-right { display: flex; align-items: center; gap: 14px; }
 
+/* 动效开关 */
+.fx-toggle {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 5px 12px;
+  font-family: var(--mono);
+  font-size: 12px; color: var(--amber);
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+  transition: color 0.25s, border-color 0.25s, background 0.25s;
+}
+.fx-toggle::before {
+  content: "";
+  width: 6px; height: 6px; border-radius: 50%;
+  background: currentColor;
+}
+.fx-toggle[aria-pressed="false"] { color: var(--ink-3); }
+.fx-toggle:hover { border-color: var(--amber); color: var(--amber-2); }
+.fx-toggle[aria-pressed="false"]:hover { color: var(--ink-2); }
+
 .status-pill {
   display: inline-flex; align-items: center; gap: 8px;
   padding: 5px 12px;
@@ -914,18 +933,22 @@ html.has-cursor, html.has-cursor * { cursor: none !important; }
   .scroll-hint { display: none; }
 }
 
-/* ============ 降低动效 ============ */
-@media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-  .m-dot, .scroll-line { display: none; }
-  .js [data-reveal] { opacity: 1; transform: none; }
-  .hero-copy > *, .hero-term { opacity: 1; transform: none; }
+/* ============ 动效开关（JS 维护 html.fx-off 类） ============
+   默认跟随系统「减少动画」，可被右上角「动效」按钮覆盖并记忆。
+   用类而非媒体查询实现，开关切换即时生效。 */
+html.fx-off { scroll-behavior: auto; }
+html.fx-off *, html.fx-off *::before, html.fx-off *::after {
+  animation: none !important;
+  transition: none !important;
 }
+html.fx-off .m-dot, html.fx-off .scroll-line,
+html.fx-off .cursor-dot, html.fx-off .cursor-ring,
+html.fx-off .visual-card::before { display: none !important; }
+html.fx-off .section-fx { visibility: hidden; }
+html.fx-off .js [data-reveal],
+html.fx-off .hero-copy > *,
+html.fx-off .hero-term { opacity: 1; transform: none; }
+html.fx-off, html.fx-off * { cursor: auto !important; }
 
 /* ============ 打印：面试官可能打印/转 PDF ============ */
 @media print {

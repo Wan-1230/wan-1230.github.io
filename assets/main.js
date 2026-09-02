@@ -8,8 +8,19 @@
   const docEl = document.documentElement;
   docEl.classList.add("js");
 
-  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const finePointer = window.matchMedia("(pointer: fine)").matches;
+
+  /* ============ 动效总开关 ============
+     默认跟随系统「减少动画」设置（prefers-reduced-motion），
+     用户可点右上角「动效」按钮强制开/关，选择存 localStorage 即时生效。
+     注意：整屏滚动是导航行为，不在此开关内，仅动效时长变化。 */
+  const prefersReduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let fxOn = null;
+  try { fxOn = localStorage.getItem("fx"); } catch {}
+  if (fxOn === null) fxOn = prefersReduce ? "0" : "1";
+  const motionOK = () => fxOn === "1";
+  const motionOff = () => fxOn !== "1";
+
   const $ = (s, p = document) => p.querySelector(s);
   const $$ = (s, p = document) => [...p.querySelectorAll(s)];
 
@@ -85,8 +96,10 @@
     fpDotEls.forEach((d, i) => d.classList.toggle("is-active", i === idx));
   }
 
+  // 整屏滚动是「导航行为」，不受动效开关限制；仅动画时长随动效状态变化
   const snapEnabled = () =>
-    finePointer && !reducedMotion && window.innerWidth >= 1024 && !docEl.classList.contains("nav-open");
+    finePointer && window.innerWidth >= 1024 && !docEl.classList.contains("nav-open");
+  const snapDur = () => (motionOK() ? 760 : 380);
 
   const maxScrollY = () => document.documentElement.scrollHeight - window.innerHeight;
 
@@ -150,7 +163,7 @@
       y = el.getBoundingClientRect().top + window.scrollY;
     }
     snapping = true;
-    animateScrollTo(y).then(releaseSnapLock);
+    animateScrollTo(y, snapDur()).then(releaseSnapLock);
   }
 
   window.addEventListener("wheel", e => {
@@ -184,7 +197,7 @@
       if (target === undefined) return;                           // 已在第一页
     }
     snapping = true;
-    animateScrollTo(target).then(releaseSnapLock);
+    animateScrollTo(target, snapDur()).then(releaseSnapLock);
   }, { passive: false });
 
   // 导航 / 按钮 / 分页点的锚点跳转走同一套吸附动画，避免与滚轮锁打架
@@ -205,7 +218,7 @@
   const SCRAMBLE_CHARS = "01<>/{}[]#$%&=+*;:ABCDEFGHKMNPRSTUVXYZ";
   function scrambleIn(el) {
     const original = el.dataset.text || (el.dataset.text = el.textContent);
-    if (reducedMotion) { el.textContent = original; return; }
+    if (motionOff()) { el.textContent = original; return; }
     const t0 = performance.now();
     const dur = 620;
     (function frame(now) {
@@ -242,7 +255,7 @@
       let s = useComma ? Math.round(v).toLocaleString("en-US") : v.toFixed(decimals);
       return s + suffix;
     };
-    if (reducedMotion) { el.textContent = fmt(target); return; }
+    if (motionOff()) { el.textContent = fmt(target); return; }
     const dur = 1500;
     const t0 = performance.now();
     (function step(now) {
@@ -267,12 +280,18 @@
     "RAG / Multi-Agent / MCP 落地经验",
     "从需求分析到部署上线，一个人走完"
   ];
-  if (reducedMotion) {
-    rotor.textContent = rotorLines[0];
-  } else {
+  {
     let li = 0, ci = 0, deleting = false;
     (function tick() {
       const line = rotorLines[li];
+      if (motionOff()) {                       // 动效关闭：整句显示，轮换但不打字
+        rotor.textContent = line;
+        setTimeout(tick, 2600);
+        deleting = false;
+        ci = 0;
+        li = (li + 1) % rotorLines.length;
+        return;
+      }
       ci += deleting ? -1 : 1;
       rotor.textContent = line.slice(0, ci);
       let delay = deleting ? 30 : 78;
@@ -308,7 +327,7 @@
     div.className = "t-line t-cmd";
     div.innerHTML = `<span class="t-prompt">${PROMPT}</span>`;
     termOut.appendChild(div);
-    if (reducedMotion) { div.innerHTML += esc(cmd); termBody.scrollTop = termBody.scrollHeight; return; }
+    if (motionOff()) { div.innerHTML += esc(cmd); termBody.scrollTop = termBody.scrollHeight; return; }
     for (let i = 1; i <= cmd.length; i++) {
       div.innerHTML = `<span class="t-prompt">${PROMPT}</span>` + esc(cmd.slice(0, i));
       termBody.scrollTop = termBody.scrollHeight;
@@ -334,7 +353,7 @@
     booted = true;
     for (const step of BOOT) {
       if (step.cmd) { await typeCommand(step.cmd); await sleep(160); }
-      else for (const line of step.out) { print(line); await sleep(reducedMotion ? 0 : 90); }
+      else for (const line of step.out) { print(line); await sleep(motionOff() ? 0 : 90); }
     }
   }
   boot();
@@ -394,7 +413,7 @@
 
     if (lower === "sudo hire-me" || lower === "sudo hire me") {
       print("<span class='t-dim'>[sudo] password for interviewer:</span> ********  <span class='t-ok'>验证通过 ✓</span>");
-      await sleep(reducedMotion ? 0 : 350);
+      await sleep(motionOff() ? 0 : 350);
       CMDS["hire-me"]();
       return;
     }
@@ -441,7 +460,7 @@
     canvas.width = W * dpr; canvas.height = H * dpr;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     buildDots();
-    if (reducedMotion) drawDots(0);
+    if (motionOff()) drawDots(0);
   }
   function drawDots(t) {
     ctx.clearRect(0, 0, W, H);
@@ -475,7 +494,7 @@
     }
   }
   function loop(t) {
-    if (heroVisible && !reducedMotion) drawDots(t);
+    if (heroVisible && !motionOff()) drawDots(t);
     requestAnimationFrame(loop);
   }
   resizeCanvas();
@@ -487,13 +506,11 @@
   hero.addEventListener("mouseleave", () => { mx = my = -9999; });
   new IntersectionObserver(([e]) => { heroVisible = e.isIntersecting; }).observe(hero);
 
-  if (!reducedMotion) {
-    requestAnimationFrame(loop);
-    setInterval(() => {
-      if (heroVisible && document.visibilityState === "visible" && pulses.length < 3)
-        pulses.push({ x: Math.random() * W, y: Math.random() * H, r: 0, max: Math.max(W, H) * 0.4 });
-    }, 2600);
-  }
+  requestAnimationFrame(loop);
+  setInterval(() => {
+    if (heroVisible && document.visibilityState === "visible" && pulses.length < 3 && motionOK())
+      pulses.push({ x: Math.random() * W, y: Math.random() * H, r: 0, max: Math.max(W, H) * 0.4 });
+  }, 2600);
 
   /* ============ 项目区块进入 → 触发 SVG 动效 ============ */
   const projIO = new IntersectionObserver(entries => {
@@ -517,10 +534,15 @@
   async function chatLoop() {
     if (chatStarted) return;
     chatStarted = true;
-    if (reducedMotion) { chatText.textContent = chatMsgs[0]; return; }
     let i = 0;
     for (;;) {
       const msg = chatMsgs[i % chatMsgs.length];
+      if (motionOff()) {                       // 动效关闭：直接显示完整内容，打开开关后恢复逐字输出
+        chatText.textContent = msg;
+        await sleep(3000);
+        i++;
+        continue;
+      }
       chatText.textContent = "";
       for (const ch of msg) {
         chatText.textContent += ch;
@@ -538,8 +560,8 @@
   const ttfts = ["0.38s", "0.42s", "0.45s", "0.36s", "0.41s"];
   const chunks = [384, 512, 640];
   const topks = [4, 5, 6];
-  if (!reducedMotion) setInterval(() => {
-    if (!chatStarted || document.hidden) return;
+  setInterval(() => {
+    if (!chatStarted || document.hidden || motionOff()) return;
     const pick = a => a[Math.floor(Math.random() * a.length)];
     chatStatus.textContent = `sse: streaming · chunk ${pick(chunks)} · top-k ${pick(topks)} · ttft ${pick(ttfts)}`;
   }, 2400);
@@ -560,10 +582,6 @@
   async function logLoop() {
     if (logStarted) return;
     logStarted = true;
-    if (reducedMotion) {
-      phoneLog.innerHTML = LOGS.map(l => `<span class="pl-line c-${l.c} on"><span class="pl-tag">[${l.c}]</span>  ${l.t}</span>`).join("");
-      return;
-    }
     for (;;) {
       phoneLog.innerHTML = "";
       for (const l of LOGS) {
@@ -572,7 +590,7 @@
         span.innerHTML = `<span class="pl-tag">[${l.c}]</span>  ${l.t}`;
         phoneLog.appendChild(span);
         requestAnimationFrame(() => span.classList.add("on"));
-        await sleep(760);
+        await sleep(motionOff() ? 380 : 760);   // 动效关闭时 CSS 会把过渡瞬时化
       }
       await sleep(2800);
     }
@@ -596,8 +614,8 @@
   });
 
   /* ============ 自定义光标 ============ */
-  if (finePointer && !reducedMotion) {
-    docEl.classList.add("has-cursor");
+  // 绑定始终建立；显隐由 html.fx-off 类 + has-cursor 类控制（renderFx 维护）
+  if (finePointer) {
     const dotEl = $("#cursorDot");
     const ringEl = $("#cursorRing");
     let x = -100, y = -100, rx = -100, ry = -100, shown = false;
@@ -627,9 +645,10 @@
   }
 
   /* ============ 磁吸按钮 ============ */
-  if (finePointer && !reducedMotion) {
+  if (finePointer) {
     $$(".mag").forEach(el => {
       el.addEventListener("mousemove", e => {
+        if (motionOff()) return;
         const r = el.getBoundingClientRect();
         const dx = (e.clientX - r.left - r.width / 2) * 0.22;
         const dy = (e.clientY - r.top - r.height / 2) * 0.22;
@@ -640,9 +659,10 @@
   }
 
   /* ============ 项目卡片聚光灯 ============ */
-  if (finePointer && !reducedMotion) {
+  if (finePointer) {
     $$(".visual-card").forEach(card => {
       card.addEventListener("mousemove", e => {
+        if (motionOff()) return;
         const r = card.getBoundingClientRect();
         card.style.setProperty("--mx", (e.clientX - r.left) + "px");
         card.style.setProperty("--my", (e.clientY - r.top) + "px");
@@ -674,7 +694,7 @@
   // Grid Motion：技术栈区块背景，随机网格单元呼吸闪烁
   (function gridMotion() {
     const canvas = $("#stackFx");
-    if (!canvas || reducedMotion) return;
+    if (!canvas) return;
     const GAP = 34;
     let ctx, w, h, raf, cells = [], timer;
     function build() {
@@ -686,20 +706,23 @@
     }
     function draw() {
       ctx.clearRect(0, 0, w, h);
-      for (const c of cells) {
-        if (c.a <= 0) continue;
-        ctx.fillStyle = `rgba(232,163,61,${c.a})`;
-        ctx.fillRect(c.x - GAP / 2 + 2, c.y - GAP / 2 + 2, GAP - 4, GAP - 4);
-        c.a -= 0.008;
+      if (motionOK()) {                        // 动效开关关闭时只清屏，打开后即时恢复
+        for (const c of cells) {
+          if (c.a <= 0) continue;
+          ctx.fillStyle = `rgba(232,163,61,${c.a})`;
+          ctx.fillRect(c.x - GAP / 2 + 2, c.y - GAP / 2 + 2, GAP - 4, GAP - 4);
+          c.a -= 0.0025;
+        }
       }
       raf = requestAnimationFrame(draw);
     }
     build();
-    return fxWhenVisible(canvas, () => {
+    fxWhenVisible(canvas, () => {
       raf = requestAnimationFrame(draw);
       timer = setInterval(() => {
-        for (let k = 0; k < 2; k++) cells[(Math.random() * cells.length) | 0].a = 0.05 + Math.random() * 0.05;
-      }, 420);
+        if (!motionOK()) return;
+        for (let k = 0; k < 5; k++) cells[(Math.random() * cells.length) | 0].a = 0.08 + Math.random() * 0.08;
+      }, 320);
       window.addEventListener("resize", build);
       return () => { cancelAnimationFrame(raf); clearInterval(timer); window.removeEventListener("resize", build); };
     });
@@ -708,7 +731,7 @@
   // Letter Glitch：页脚背景，随机字符矩阵明灭
   (function letterGlitch() {
     const canvas = $("#footerFx");
-    if (!canvas || reducedMotion) return;
+    if (!canvas) return;
     const CHARS = "01<>/{}[]#$%&=+*;:AZKWTH";
     const GAP = 30;
     let ctx, w, h, raf, cells = [], timer;
@@ -721,23 +744,26 @@
     }
     function draw() {
       ctx.clearRect(0, 0, w, h);
-      ctx.font = "12px " + "ui-monospace, Consolas, monospace";
-      for (const c of cells) {
-        if (c.a <= 0) continue;
-        ctx.fillStyle = c.green ? `rgba(134,185,126,${c.a})` : `rgba(232,163,61,${c.a})`;
-        ctx.fillText(c.ch, c.x - 4, c.y + 4);
-        c.a -= 0.012;
+      if (motionOK()) {
+        ctx.font = "12px " + "ui-monospace, Consolas, monospace";
+        for (const c of cells) {
+          if (c.a <= 0) continue;
+          ctx.fillStyle = c.green ? `rgba(134,185,126,${c.a})` : `rgba(232,163,61,${c.a})`;
+          ctx.fillText(c.ch, c.x - 4, c.y + 4);
+          c.a -= 0.006;
+        }
       }
       raf = requestAnimationFrame(draw);
     }
     build();
-    return fxWhenVisible(canvas, () => {
+    fxWhenVisible(canvas, () => {
       raf = requestAnimationFrame(draw);
       timer = setInterval(() => {
-        for (let k = 0; k < 4; k++) {
+        if (!motionOK()) return;
+        for (let k = 0; k < 6; k++) {
           const c = cells[(Math.random() * cells.length) | 0];
           c.ch = CHARS[(Math.random() * CHARS.length) | 0];
-          c.a = 0.12 + Math.random() * 0.14;
+          c.a = 0.16 + Math.random() * 0.14;
           c.green = Math.random() < 0.22;
         }
       }, 300);
@@ -747,9 +773,9 @@
   })();
 
   /* ============ reactbits Click Spark：点击迸发火花 ============ */
-  if (finePointer && !reducedMotion) {
+  if (finePointer) {
     document.addEventListener("pointerdown", e => {
-      if (e.button !== 0) return;
+      if (e.button !== 0 || motionOff()) return;
       if (e.target.closest("input, textarea, .term-body")) return;   // 输入场景不打扰
       const box = document.createElement("div");
       box.className = "click-spark";
@@ -765,7 +791,28 @@
     });
   }
 
-  /* ============ 移动端菜单：Esc 关闭 + 锁滚动 ============ */  const menuState = () => docEl.classList.contains("nav-open");
+  /* ============ 动效开关（右上角「动效」按钮） ============ */
+  const fxToggle = $("#fxToggle");
+  function renderFx() {
+    const on = motionOK();
+    docEl.classList.toggle("fx-off", !on);
+    docEl.classList.toggle("has-cursor", finePointer && on);
+    if (fxToggle) {
+      fxToggle.setAttribute("aria-pressed", String(on));
+      fxToggle.title = on ? "动效：开（点击关闭）" : "动效：关（点击开启）";
+    }
+  }
+  if (fxToggle) {
+    fxToggle.addEventListener("click", () => {
+      fxOn = motionOK() ? "0" : "1";
+      try { localStorage.setItem("fx", fxOn); } catch {}
+      renderFx();
+    });
+  }
+  renderFx();
+
+  /* ============ 移动端菜单：Esc 关闭 + 锁滚动 ============ */
+  const menuState = () => docEl.classList.contains("nav-open");
   document.addEventListener("keydown", e => {
     if (e.key === "Escape" && menuState()) {
       docEl.classList.remove("nav-open");
