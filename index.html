@@ -15,6 +15,7 @@
 <body>
 
 <div class="progress" id="progress"></div>
+<nav class="fp-dots" id="fpDots" aria-label="分页导航"></nav>
 <div class="cursor-dot" id="cursorDot" aria-hidden="true"></div>
 <div class="cursor-ring" id="cursorRing" aria-hidden="true"></div>
 
@@ -49,7 +50,7 @@
       <p class="hero-line mono">&gt; <span id="rotor"></span><span class="caret"></span></p>
       <p class="hero-desc">3 年工程现场的数据体系与流程数字化经验，加上近半年高强度独立开发——3 款应用，从需求分析、架构设计、编码到部署上线，每一款都完整跑在自己手里。</p>
       <div class="hero-cta">
-        <a class="btn btn-primary mag" href="#projects">看看这三个项目</a>
+        <a class="btn btn-primary star-ring mag" href="#projects">看看这三个项目</a>
         <a class="btn btn-ghost mag" href="https://github.com/Wan-1230" target="_blank" rel="noopener">GitHub<svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 12 12 4M6 4h6v6"/></svg></a>
       </div>
       <ul class="hero-stats mono">
@@ -90,7 +91,7 @@
   <div class="container">
     <div class="about-grid">
       <div class="about-side" data-reveal>
-        <p class="sec-eyebrow mono">// 01 · 关于</p>
+        <p class="sec-eyebrow mono" data-scramble>// 01 · 关于</p>
         <h2 class="sec-title">不是科班转行，<br>是把「把事做完」<br>带进了 AI</h2>
         <div class="about-status mono">
           <p><span class="k">status</span><span class="v"><i class="dot"></i>open to work</span></p>
@@ -116,7 +117,7 @@
 <section class="section" id="projects">
   <div class="container">
     <header class="sec-head" data-reveal>
-      <p class="sec-eyebrow mono">// 02 · 项目</p>
+      <p class="sec-eyebrow mono" data-scramble>// 02 · 项目</p>
       <h2 class="sec-title">三个项目，三种技术栈，<br>同一件事：做完，上线，可验证</h2>
     </header>
   </div>
@@ -226,7 +227,7 @@
           <div><b data-count="1">0</b><span>次独立全栈交付</span></div>
         </div>
         <div class="proj-links" data-reveal>
-          <a class="chip-link chip-link--live mono" href="https://ai-interview-6rn.pages.dev" target="_blank" rel="noopener"><i class="dot"></i>在线体验：ai-interview-6rn.pages.dev<svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 12 12 4M6 4h6v6"/></svg></a>
+          <a class="chip-link chip-link--live star-ring mono" href="https://ai-interview-6rn.pages.dev" target="_blank" rel="noopener"><i class="dot"></i>在线体验：ai-interview-6rn.pages.dev<svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 12 12 4M6 4h6v6"/></svg></a>
           <a class="chip-link mono" href="https://github.com/Wan-1230/ai-resume" target="_blank" rel="noopener">github.com/Wan-1230/ai-resume<svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 12 12 4M6 4h6v6"/></svg></a>
         </div>
       </div>
@@ -322,9 +323,10 @@
 
 <!-- ============ STACK ============ -->
 <section class="section" id="stack">
+  <canvas id="stackFx" class="section-fx" aria-hidden="true"></canvas>
   <div class="container">
     <header class="sec-head" data-reveal>
-      <p class="sec-eyebrow mono">// 03 · 技术栈</p>
+      <p class="sec-eyebrow mono" data-scramble>// 03 · 技术栈</p>
       <h2 class="sec-title">每一项都挂着具体的项目，<br>不是简历关键词堆砌</h2>
       <p class="sec-hint mono">悬停标签可查看「用在哪」</p>
     </header>
@@ -405,7 +407,7 @@
 <section class="section" id="journey">
   <div class="container">
     <header class="sec-head" data-reveal>
-      <p class="sec-eyebrow mono">// 04 · 经历</p>
+      <p class="sec-eyebrow mono" data-scramble>// 04 · 经历</p>
       <h2 class="sec-title">从工程现场到 AI 应用</h2>
       <p class="sec-note">现场教会我的是把复杂系统拆到能落地；AI 是我现在最想把它做完的事。</p>
     </header>
@@ -438,8 +440,9 @@
 
 <!-- ============ CONTACT / FOOTER ============ -->
 <footer class="footer" id="contact">
+  <canvas id="footerFx" class="section-fx" aria-hidden="true"></canvas>
   <div class="container">
-    <p class="sec-eyebrow mono" data-reveal>// 05 · 联系</p>
+    <p class="sec-eyebrow mono" data-reveal data-scramble>// 05 · 联系</p>
     <h2 class="footer-title" data-reveal>如果你在找能独立把<br>AI 应用做到上线的人——<em>聊聊？</em></h2>
     <p class="footer-sub" data-reveal>求职意向：AI 应用开发 / AI Agent 开发 / 大模型应用开发（全职）· 青岛 / 远程 · 随时到岗。邮件 24 小时内一定回。</p>
     <div class="contact-row" data-reveal>

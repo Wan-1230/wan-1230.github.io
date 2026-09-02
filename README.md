@@ -6,8 +6,10 @@
 
 ## 特性
 
+- **整屏滚动**：滚轮一格翻一页，平滑吸附到停靠点（含高区块内部中间站），带动画锁与触摸板惯性静默窗；终端内滚区优先自滚；触屏 / 减动效 / 窄屏自动退回原生滚动；右侧分页指示点
 - 可交互终端（真的能敲命令：`help` / `projects` / `neofetch` / `sudo hire-me`）
-- Canvas 点阵背景（跟随鼠标 + 信号脉冲）
+- Canvas 点阵背景（跟随鼠标 + 信号脉冲）、技术栈 Grid Motion 网格闪烁、页脚 Letter Glitch 字符矩阵
+- reactbits 风格动效（原生 JS 移植）：Scrambled Text 区块标题解码、Click Spark 点击火花、Star Border 旋转描边、Shiny Text 高光扫字
 - 三张手绘 SVG 架构动图：Agent 编排、RAG 管道、多通道连接调度
 - 流式对话演示（模拟 SSE 逐字输出）、滚动计数、打字机、跑马灯
 - 自定义光标、磁吸按钮、卡片聚光灯（仅精确指针设备启用）

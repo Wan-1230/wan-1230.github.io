@@ -100,7 +100,26 @@ button { font: inherit; color: inherit; background: none; border: 0; }
   backdrop-filter: blur(12px);
   border-bottom-color: var(--line);
 }
-.nav.is-hidden { transform: translateY(-100%); }
+
+/* 整屏滚动分页指示点（仅桌面精确指针显示） */
+.fp-dots {
+  position: fixed; right: 22px; top: 50%; z-index: 900;
+  transform: translateY(-50%);
+  display: none;
+  flex-direction: column; gap: 11px;
+}
+.fp-dot {
+  width: 8px; height: 8px;
+  border-radius: 99px;
+  background: #3a331f;
+  padding: 0;
+  transition: height 0.35s var(--ease), background 0.25s;
+}
+.fp-dot:hover { background: var(--ink-3); }
+.fp-dot.is-active { height: 24px; background: var(--amber); }
+@media (min-width: 1024px) and (pointer: fine) {
+  .fp-dots { display: flex; }
+}
 
 .nav-logo { font-size: 14px; color: var(--ink-2); letter-spacing: 0.02em; transition: color 0.25s; }
 .nav-logo span { color: var(--amber); }
@@ -233,6 +252,24 @@ button { font: inherit; color: inherit; background: none; border: 0; }
   box-shadow: 0 0 0 0 rgba(232, 163, 61, 0.35);
 }
 .btn-primary:hover { background: var(--amber-2); box-shadow: 0 8px 30px -8px rgba(232, 163, 61, 0.45); }
+
+/* reactbits Star Border：旋转光点描边（Chromium/Safari/Firefox 均支持 @property） */
+@property --sb { syntax: "<angle>"; initial-value: 0deg; inherits: false; }
+.star-ring { position: relative; }
+.star-ring::after {
+  content: "";
+  position: absolute; inset: -1.5px;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: conic-gradient(from var(--sb), transparent 0deg 295deg, rgba(242, 192, 99, 0.95) 330deg, transparent 360deg);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+          mask-composite: exclude;
+  animation: sb-spin 2.8s linear infinite;
+  pointer-events: none;
+}
+@keyframes sb-spin { to { --sb: 360deg; } }
 
 .btn-ghost { border: 1px solid var(--line-2); color: var(--ink); }
 .btn-ghost:hover { border-color: var(--amber); color: var(--amber); }
@@ -367,6 +404,15 @@ button { font: inherit; color: inherit; background: none; border: 0; }
 
 /* ============ 通用 Section ============ */
 .section { padding: clamp(88px, 11vw, 140px) 0; position: relative; }
+
+/* 区块背景特效画布（reactbits 风格：Grid Motion / Letter Glitch） */
+.section-fx {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  display: block;
+}
+#stack .container, #stack .sec-head, .footer .container { position: relative; z-index: 1; }
 
 .sec-eyebrow { font-size: 13px; color: var(--amber); letter-spacing: 0.08em; margin-bottom: 18px; }
 .sec-title {
@@ -623,7 +669,9 @@ button { font: inherit; color: inherit; background: none; border: 0; }
   background: var(--bg-3);
   border: 1px solid var(--line);
   color: var(--ink-2);
-  min-height: 128px;
+  /* 固定高度：流式打字不改变区块高度，避免整屏滚动停靠点漂移 */
+  height: 164px;
+  overflow: hidden;
 }
 .chat-status { padding: 8px 14px; border-top: 1px solid var(--line); font-size: 10.5px; color: var(--ink-3); }
 
@@ -694,6 +742,7 @@ button { font: inherit; color: inherit; background: none; border: 0; }
 
 /* ============ 页脚 / 联系 ============ */
 .footer {
+  position: relative;
   border-top: 1px solid var(--line);
   background: linear-gradient(to bottom, var(--bg), #0c0b08);
   padding: clamp(88px, 11vw, 140px) 0 36px;
@@ -704,7 +753,21 @@ button { font: inherit; color: inherit; background: none; border: 0; }
   line-height: 1.3;
   max-width: 18em;
 }
-.footer-title em { font-style: normal; color: var(--amber); }
+.footer-title em {
+  font-style: normal;
+  /* reactbits Shiny Text：高光扫过 */
+  background: linear-gradient(110deg, var(--amber) 42%, #ffdf9e 50%, var(--amber) 58%);
+  background-size: 240% 100%;
+  -webkit-background-clip: text;
+          background-clip: text;
+  -webkit-text-fill-color: transparent;
+          color: var(--amber);
+  animation: shiny 3.6s ease-in-out infinite;
+}
+@keyframes shiny {
+  0% { background-position: 120% 0; }
+  55%, 100% { background-position: -120% 0; }
+}
 .footer-sub { margin-top: 22px; color: var(--ink-2); font-size: 16px; max-width: 40em; }
 
 .contact-row { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 40px; }
@@ -767,6 +830,25 @@ button { font: inherit; color: inherit; background: none; border: 0; }
 }
 html.has-cursor .cursor-dot, html.has-cursor .cursor-ring { opacity: 1; }
 html.has-cursor, html.has-cursor * { cursor: none !important; }
+
+/* reactbits Click Spark：点击迸发的火花 */
+.click-spark {
+  position: fixed; z-index: 9998;
+  width: 0; height: 0;
+  pointer-events: none;
+}
+.click-spark i {
+  position: absolute; left: 0; top: 0;
+  width: 2px; height: 9px;
+  margin: -9px 0 0 -1px;
+  border-radius: 1px;
+  background: var(--amber-2);
+  transform: rotate(var(--a)) translateY(-8px);
+  animation: spark-fly 0.5s var(--ease) forwards;
+}
+@keyframes spark-fly {
+  to { transform: rotate(var(--a)) translateY(-26px) scaleY(0.3); opacity: 0; }
+}
 
 /* 磁吸按钮 */
 .mag { will-change: transform; }

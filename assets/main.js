@@ -13,10 +13,31 @@
   const $ = (s, p = document) => p.querySelector(s);
   const $$ = (s, p = document) => [...p.querySelectorAll(s)];
 
-  /* ============ 顶部进度条 + 导航状态 ============ */
+  /* ============ 顶部进度条 + 导航状态 + 分页指示点 ============ */
+  // 整屏滚动的区块表（分页点 & 停靠点共用）
+  const FP_BLOCKS = [
+    ["#hero", "首页"], ["#about", "关于"], ["#projects", "项目"],
+    ["#p-wth", "01 Wide Thought Host"], ["#p-rag", "02 AI 面试宝典"], ["#p-nlink", "03 N-Link"],
+    ["#stack", "技术栈"], ["#journey", "经历"], ["#contact", "联系"]
+  ];
+  const fpDotsBox = $("#fpDots");
+  const fpBlockEls = FP_BLOCKS.map(([sel]) => $(sel)).filter(Boolean);
+  if (fpDotsBox) {
+    FP_BLOCKS.forEach(([sel, name]) => {
+      if (!$(sel)) return;
+      const b = document.createElement("button");
+      b.className = "fp-dot";
+      b.type = "button";
+      b.title = name;
+      b.setAttribute("aria-label", "跳转到：" + name);
+      b.addEventListener("click", () => fpGo(sel === "#hero" ? 0 : sel, sel === "#contact" ? "end" : "top"));
+      fpDotsBox.appendChild(b);
+    });
+  }
+  const fpDotEls = fpDotsBox ? $$(".fp-dot", fpDotsBox) : [];
+
   const progress = $("#progress");
   const nav = $("#nav");
-  let lastY = 0;
   let ticking = false;
 
   function onScroll() {
@@ -24,10 +45,7 @@
     const max = document.documentElement.scrollHeight - window.innerHeight;
     progress.style.width = (max > 0 ? (y / max) * 100 : 0) + "%";
     nav.classList.toggle("is-scrolled", y > 24);
-    // 向下滚动且离开首屏时收起导航，向上滚回时出现
-    if (y > window.innerHeight * 0.8 && y > lastY + 4) nav.classList.add("is-hidden");
-    else if (y < lastY - 4 || y < window.innerHeight * 0.8) nav.classList.remove("is-hidden");
-    lastY = y;
+    updateFpDots(y);
     ticking = false;
   }
   window.addEventListener("scroll", () => {
@@ -49,10 +67,167 @@
     })
   );
 
+  /* ============================================================
+     整屏滚动（full-page scroll）
+     思路：保留原生滚动管线（终端内滚区 / 输入框 / 选中文本不受影响），
+     仅在桌面精确指针下接管 wheel：每次手势吸附到「下一个停靠点」。
+     停靠点 = 各区块顶部 + 高区块内部按视口高插入的中间站 + 文档底部，
+     因此 1.5 个视口高的项目区块也能逐屏读完，不会一次跳过。
+     ============================================================ */
+  // 当前所在页高亮（读取实况位置，天然适配尺寸变化）
+  function updateFpDots(y) {
+    if (!fpDotEls.length) return;
+    const half = window.innerHeight * 0.5;
+    let idx = 0;
+    fpBlockEls.forEach((el, i) => {
+      if (el.getBoundingClientRect().top <= half) idx = i;
+    });
+    fpDotEls.forEach((d, i) => d.classList.toggle("is-active", i === idx));
+  }
+
+  const snapEnabled = () =>
+    finePointer && !reducedMotion && window.innerWidth >= 1024 && !docEl.classList.contains("nav-open");
+
+  const maxScrollY = () => document.documentElement.scrollHeight - window.innerHeight;
+
+  // 停靠点：每次手势实时重算，天然处理窗口 resize / 响应式高度变化
+  function getStops() {
+    const vh = window.innerHeight;
+    const top = el => el.getBoundingClientRect().top + window.scrollY;
+    const tops = fpBlockEls.map(top);
+    const end = maxScrollY();
+    const MIN = Math.max(140, vh * 0.18);   // 相邻停靠点最小间距，防止原地微跳
+    const stops = [0];
+    for (let i = 0; i < tops.length; i++) {
+      const cur = Math.min(tops[i], end);
+      if (cur > stops[stops.length - 1]) stops.push(cur);
+      const next = i + 1 < tops.length ? Math.min(tops[i + 1], end) : end;
+      // 区块比一屏高出一截时，在区块内部按整屏插入中间站
+      for (let t = cur + vh; t < next - MIN; t += vh) stops.push(t);
+    }
+    stops.push(end);
+    return [...new Set(stops)].sort((a, b) => a - b);
+  }
+
+  function animateScrollTo(target, dur = 760) {
+    return new Promise(resolve => {
+      const start = window.scrollY;
+      const delta = target - start;
+      if (Math.abs(delta) < 2) { resolve(); return; }
+      const t0 = performance.now();
+      const prevBehavior = docEl.style.scrollBehavior;
+      docEl.style.scrollBehavior = "auto";   // 逐帧动画期间关掉 CSS smooth，避免打架
+      (function frame(now) {
+        const p = Math.min((now - t0) / dur, 1);
+        const e = p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;  // easeInOutCubic
+        window.scrollTo(0, start + delta * e);
+        if (p < 1) requestAnimationFrame(frame);
+        else { docEl.style.scrollBehavior = prevBehavior; resolve(); }
+      })(t0);
+    });
+  }
+
+  // 动画结束后再等 250ms 滚轮静默期才解锁，吸收触摸板惯性，防止连跳两页
+  function releaseSnapLock() {
+    const check = () => {
+      if (performance.now() - lastWheelAt > 250) snapping = false;
+      else setTimeout(check, 120);
+    };
+    setTimeout(check, 260);
+  }
+
+  let snapping = false;   // 动画锁：动画期间忽略一切滚轮
+  let lastWheelAt = 0;    // 最近滚轮时间戳：用于识别触摸板惯性
+
+  function fpGo(target, mode) {
+    if (!snapEnabled() || snapping) return;
+    let y;
+    if (target === 0) y = 0;
+    else if (mode === "end") y = maxScrollY();
+    else {
+      const el = $(target);
+      if (!el) return;
+      y = el.getBoundingClientRect().top + window.scrollY;
+    }
+    snapping = true;
+    animateScrollTo(y).then(releaseSnapLock);
+  }
+
+  window.addEventListener("wheel", e => {
+    if (!snapEnabled()) return;                                   // 触屏 / 减动效 / 窄屏 → 原生滚动
+    if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;          // 横向滚动不接管
+    // 终端等内部滚动区优先自滚，滚到边缘再把手势交给整屏翻页
+    const box = e.target.closest && e.target.closest(".term-body");
+    if (box) {
+      const canUp = box.scrollTop > 2;
+      const canDown = box.scrollTop + box.clientHeight < box.scrollHeight - 2;
+      if (e.deltaY < 0 && canUp) return;
+      if (e.deltaY > 0 && canDown) return;
+    }
+    e.preventDefault();
+    const now = performance.now();
+    lastWheelAt = now;
+    if (snapping) return;                                         // 动画锁：连滚只算一次
+    const dy = e.deltaY;
+    if (!dy) return;
+
+    const stops = getStops();
+    const y = window.scrollY;
+    const MIN = Math.max(140, window.innerHeight * 0.18);
+    let target;
+    if (dy > 0) {
+      target = stops.find(s => s >= y + MIN);
+      if (target === undefined) return;                           // 已在最后一页
+    } else {
+      const above = stops.filter(s => s <= y - MIN);
+      target = above[above.length - 1];
+      if (target === undefined) return;                           // 已在第一页
+    }
+    snapping = true;
+    animateScrollTo(target).then(releaseSnapLock);
+  }, { passive: false });
+
+  // 导航 / 按钮 / 分页点的锚点跳转走同一套吸附动画，避免与滚轮锁打架
+  $$('a[href^="#"]').forEach(a => {
+    a.addEventListener("click", e => {
+      const href = a.getAttribute("href");
+      if (href === "#") return;
+      const el = $(href);
+      if (!el) return;
+      if (!snapEnabled()) return;                                 // 小屏仍用 CSS smooth 原生跳转
+      e.preventDefault();
+      fpGo(href, href === "#contact" ? "end" : "top");
+    });
+  });
+
   /* ============ 滚动进入动画 ============ */
+  // reactbits Scrambled/Decrypted Text：文字从乱码中「解码」显现
+  const SCRAMBLE_CHARS = "01<>/{}[]#$%&=+*;:ABCDEFGHKMNPRSTUVXYZ";
+  function scrambleIn(el) {
+    const original = el.dataset.text || (el.dataset.text = el.textContent);
+    if (reducedMotion) { el.textContent = original; return; }
+    const t0 = performance.now();
+    const dur = 620;
+    (function frame(now) {
+      const p = Math.min((now - t0) / dur, 1);
+      const settled = Math.floor(p * original.length);
+      el.textContent = [...original].map((ch, i) => {
+        if (i < settled || /\s/.test(ch)) return ch;   // 已解码 / 空白原样保留
+        return SCRAMBLE_CHARS[(Math.random() * SCRAMBLE_CHARS.length) | 0];
+      }).join("");
+      if (p < 1) requestAnimationFrame(frame);
+      else el.textContent = original;
+    })(t0);
+  }
+
   const revealIO = new IntersectionObserver(entries => {
     for (const e of entries) {
-      if (e.isIntersecting) { e.target.classList.add("is-v"); revealIO.unobserve(e.target); }
+      if (e.isIntersecting) {
+        e.target.classList.add("is-v");
+        if (e.target.matches("[data-scramble]")) scrambleIn(e.target);
+        e.target.querySelectorAll("[data-scramble]").forEach(scrambleIn);
+        revealIO.unobserve(e.target);
+      }
     }
   }, { threshold: 0.12, rootMargin: "0px 0px -6% 0px" });
   $$("[data-reveal]").forEach(el => revealIO.observe(el));
@@ -475,8 +650,122 @@
     });
   }
 
-  /* ============ 移动端菜单：Esc 关闭 + 锁滚动 ============ */
-  const menuState = () => docEl.classList.contains("nav-open");
+  /* ============ 区块背景特效（reactbits 风格移植） ============ */
+  // 进入视口才跑、离开即停，三个画布互不抢占
+  function fxWhenVisible(canvas, start, stop) {
+    if (!canvas) return;
+    let running = false, cleanup = null;
+    new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting && !running) { running = true; cleanup = start(); }
+      else if (!entry.isIntersecting && running) { running = false; if (cleanup) cleanup(); }
+    }, { threshold: 0.05 }).observe(canvas);
+    void stop;
+  }
+
+  function fitCanvas(canvas) {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const w = canvas.offsetWidth, h = canvas.offsetHeight;
+    canvas.width = w * dpr; canvas.height = h * dpr;
+    const ctx = canvas.getContext("2d");
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { ctx, w, h };
+  }
+
+  // Grid Motion：技术栈区块背景，随机网格单元呼吸闪烁
+  (function gridMotion() {
+    const canvas = $("#stackFx");
+    if (!canvas || reducedMotion) return;
+    const GAP = 34;
+    let ctx, w, h, raf, cells = [], timer;
+    function build() {
+      ({ ctx, w, h } = fitCanvas(canvas));
+      cells = [];
+      for (let x = GAP / 2; x < w; x += GAP)
+        for (let y = GAP / 2; y < h; y += GAP)
+          cells.push({ x, y, a: 0 });
+    }
+    function draw() {
+      ctx.clearRect(0, 0, w, h);
+      for (const c of cells) {
+        if (c.a <= 0) continue;
+        ctx.fillStyle = `rgba(232,163,61,${c.a})`;
+        ctx.fillRect(c.x - GAP / 2 + 2, c.y - GAP / 2 + 2, GAP - 4, GAP - 4);
+        c.a -= 0.008;
+      }
+      raf = requestAnimationFrame(draw);
+    }
+    build();
+    return fxWhenVisible(canvas, () => {
+      raf = requestAnimationFrame(draw);
+      timer = setInterval(() => {
+        for (let k = 0; k < 2; k++) cells[(Math.random() * cells.length) | 0].a = 0.05 + Math.random() * 0.05;
+      }, 420);
+      window.addEventListener("resize", build);
+      return () => { cancelAnimationFrame(raf); clearInterval(timer); window.removeEventListener("resize", build); };
+    });
+  })();
+
+  // Letter Glitch：页脚背景，随机字符矩阵明灭
+  (function letterGlitch() {
+    const canvas = $("#footerFx");
+    if (!canvas || reducedMotion) return;
+    const CHARS = "01<>/{}[]#$%&=+*;:AZKWTH";
+    const GAP = 30;
+    let ctx, w, h, raf, cells = [], timer;
+    function build() {
+      ({ ctx, w, h } = fitCanvas(canvas));
+      cells = [];
+      for (let x = GAP / 2; x < w; x += GAP)
+        for (let y = GAP / 2; y < h; y += GAP)
+          cells.push({ x, y, ch: "", a: 0, green: false });
+    }
+    function draw() {
+      ctx.clearRect(0, 0, w, h);
+      ctx.font = "12px " + "ui-monospace, Consolas, monospace";
+      for (const c of cells) {
+        if (c.a <= 0) continue;
+        ctx.fillStyle = c.green ? `rgba(134,185,126,${c.a})` : `rgba(232,163,61,${c.a})`;
+        ctx.fillText(c.ch, c.x - 4, c.y + 4);
+        c.a -= 0.012;
+      }
+      raf = requestAnimationFrame(draw);
+    }
+    build();
+    return fxWhenVisible(canvas, () => {
+      raf = requestAnimationFrame(draw);
+      timer = setInterval(() => {
+        for (let k = 0; k < 4; k++) {
+          const c = cells[(Math.random() * cells.length) | 0];
+          c.ch = CHARS[(Math.random() * CHARS.length) | 0];
+          c.a = 0.12 + Math.random() * 0.14;
+          c.green = Math.random() < 0.22;
+        }
+      }, 300);
+      window.addEventListener("resize", build);
+      return () => { cancelAnimationFrame(raf); clearInterval(timer); window.removeEventListener("resize", build); };
+    });
+  })();
+
+  /* ============ reactbits Click Spark：点击迸发火花 ============ */
+  if (finePointer && !reducedMotion) {
+    document.addEventListener("pointerdown", e => {
+      if (e.button !== 0) return;
+      if (e.target.closest("input, textarea, .term-body")) return;   // 输入场景不打扰
+      const box = document.createElement("div");
+      box.className = "click-spark";
+      box.style.left = e.clientX + "px";
+      box.style.top = e.clientY + "px";
+      for (let i = 0; i < 8; i++) {
+        const s = document.createElement("i");
+        s.style.setProperty("--a", i * 45 + "deg");
+        box.appendChild(s);
+      }
+      document.body.appendChild(box);
+      setTimeout(() => box.remove(), 600);
+    });
+  }
+
+  /* ============ 移动端菜单：Esc 关闭 + 锁滚动 ============ */  const menuState = () => docEl.classList.contains("nav-open");
   document.addEventListener("keydown", e => {
     if (e.key === "Escape" && menuState()) {
       docEl.classList.remove("nav-open");
