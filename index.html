@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>万天昊 · AI 应用开发工程师 — LLM / Agent 方向</title>
+<meta name="description" content="万天昊，AI 应用开发工程师。3 款应用从需求到部署的完整闭环：开源 AI 编码 Agent（Rust）、RAG 面试平台（全栈上线）、尼康相机伴侣 App（Kotlin 1.4 万行）。">
+<meta property="og:type" content="website">
+<meta property="og:title" content="万天昊 · AI 应用开发工程师">
+<meta property="og:description" content="3 款应用从需求到部署的完整闭环：开源 AI 编码 Agent（Rust）、RAG 面试平台（已上线）、尼康相机伴侣 App（Kotlin）。">
+<meta name="theme-color" content="#0f0e0b">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+<div class="cursor-dot" id="cursorDot" aria-hidden="true"></div>
+<div class="cursor-ring" id="cursorRing" aria-hidden="true"></div>
+
+<header class="nav" id="nav">
+  <a class="nav-logo mono" href="#top">wan@qingdao<span>:~$</span></a>
+  <nav class="nav-links" id="navLinks" aria-label="页面导航">
+    <a href="#about" class="nav-link">关于</a>
+    <a href="#projects" class="nav-link">项目</a>
+    <a href="#stack" class="nav-link">技术栈</a>
+    <a href="#journey" class="nav-link">经历</a>
+    <a href="#contact" class="nav-link">联系</a>
+  </nav>
+  <div class="nav-right">
+    <a class="status-pill mono" href="#contact"><i class="dot"></i>在看机会</a>
+    <a class="btn-icon" href="https://github.com/Wan-1230" target="_blank" rel="noopener" aria-label="GitHub 主页">
+      <svg viewBox="0 0 16 16" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
+    </a>
+    <button class="nav-toggle" id="navToggle" aria-label="打开菜单" aria-expanded="false"><span></span><span></span></button>
+  </div>
+</header>
+
+<main id="top">
+
+<!-- ============ HERO ============ -->
+<section class="hero" id="hero">
+  <canvas id="dotGrid" aria-hidden="true"></canvas>
+  <div class="hero-inner container">
+    <div class="hero-copy">
+      <p class="hero-cmd mono">wan@qingdao:~$ whoami</p>
+      <h1 class="hero-name">万天昊</h1>
+      <h2 class="hero-role">AI 应用开发工程师<span class="hero-role-sub">LLM · Agent 方向｜全栈交付｜兼具产品能力</span></h2>
+      <p class="hero-line mono">&gt; <span id="rotor"></span><span class="caret"></span></p>
+      <p class="hero-desc">3 年工程现场的数据体系与流程数字化经验，加上近半年高强度独立开发——3 款应用，从需求分析、架构设计、编码到部署上线，每一款都完整跑在自己手里。</p>
+      <div class="hero-cta">
+        <a class="btn btn-primary mag" href="#projects">看看这三个项目</a>
+        <a class="btn btn-ghost mag" href="https://github.com/Wan-1230" target="_blank" rel="noopener">GitHub<svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 12 12 4M6 4h6v6"/></svg></a>
+      </div>
+      <ul class="hero-stats mono">
+        <li><b data-count="3">0</b><span>款应用完整交付</span></li>
+        <li><b data-count="307">0</b><span>篇文档向量化</span></li>
+        <li><b data-count="15" data-suffix="+">0</b><span>Agent 核心模块</span></li>
+        <li><b data-count="1.4" data-decimals="1" data-suffix="w">0</b><span>行 Kotlin 代码</span></li>
+      </ul>
+    </div>
+
+    <div class="term" id="term" aria-label="交互终端，输入 help 查看可用命令">
+      <div class="term-bar">
+        <span class="tl tl-r"></span><span class="tl tl-y"></span><span class="tl tl-g"></span>
+        <span class="term-title mono">wan@qingdao: ~ — zsh</span>
+      </div>
+      <div class="term-body" id="termBody">
+        <div id="termOut" class="mono"></div>
+        <noscript><div class="t-line t-dim mono">（交互终端需要 JavaScript，静态内容请直接往下看）</div></noscript>
+        <div class="term-inline mono">
+          <span class="t-prompt">wan@qingdao:~$&nbsp;</span><span id="termEcho"></span><span class="caret" id="termCaret"></span>
+          <input id="termInput" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="终端输入">
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="scroll-hint mono" href="#about" aria-label="向下滚动">scroll<span class="scroll-line"></span></a>
+</section>
+
+<!-- ============ MARQUEE ============ -->
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-track mono">
+    <span>RUST<i>//</i>MCP<i>//</i>LSP<i>//</i>MULTI-AGENT<i>//</i>RAG<i>//</i>CHROMADB<i>//</i>SSE<i>//</i>KOTLIN<i>//</i>BLE<i>//</i>WI-FI<i>//</i>USB<i>//</i>PTP<i>//</i>FUNCTION CALLING<i>//</i>PROMPT ENGINEERING<i>//</i>NODE.JS<i>//</i>REACT<i>//</i>DOCKER<i>//</i>CLOUDFLARE<i>//</i></span><span>RUST<i>//</i>MCP<i>//</i>LSP<i>//</i>MULTI-AGENT<i>//</i>RAG<i>//</i>CHROMADB<i>//</i>SSE<i>//</i>KOTLIN<i>//</i>BLE<i>//</i>WI-FI<i>//</i>USB<i>//</i>PTP<i>//</i>FUNCTION CALLING<i>//</i>PROMPT ENGINEERING<i>//</i>NODE.JS<i>//</i>REACT<i>//</i>DOCKER<i>//</i>CLOUDFLARE<i>//</i></span>
+  </div>
+</div>
+
+<!-- ============ ABOUT ============ -->
+<section class="section" id="about">
+  <div class="container">
+    <div class="about-grid">
+      <div class="about-side" data-reveal>
+        <p class="sec-eyebrow mono">// 01 · 关于</p>
+        <h2 class="sec-title">不是科班转行，<br>是把「把事做完」<br>带进了 AI</h2>
+        <div class="about-status mono">
+          <p><span class="k">status</span><span class="v"><i class="dot"></i>open to work</span></p>
+          <p><span class="k">方向</span><span class="v">AI 应用 / Agent / 大模型应用开发</span></p>
+          <p><span class="k">城市</span><span class="v">青岛 / 远程 · 随时到岗</span></p>
+        </div>
+      </div>
+      <div class="about-main">
+        <p data-reveal>我不是科班 AI。本科电气，第一份工作在中建三局做项目技术工程师。三年里干的事情回头看和现在很像：把混乱的现场数据拆成指标、把低效流程拆成系统——主导的试样台账系统把单次试验周期从 24 小时压到 4 小时，数据体系三个月里定位过一次工艺质量风险，避免了 50 万+ 的直接损失。</p>
+        <p data-reveal style="--d:.08s">2026 年起我把全部时间投进 AI 应用开发。半年独立交付三款应用：一个开源 AI 编码 Agent（Rust）、一个已上线的 RAG 面试平台（全栈）、一个 1.4 万行 Kotlin 的尼康相机伴侣 App。每一款都从需求分析做到部署上线，没有依赖团队。</p>
+        <blockquote data-reveal style="--d:.12s">「把大模型用起来不难，难的是让它稳定、可控、可交付——这三件事我在生产环境里各踩过一遍。」</blockquote>
+        <ul class="about-vals">
+          <li data-reveal style="--d:.05s"><span class="mono v-no">a.</span><div><b>工程闭环</b><span>需求分析 → 架构设计 → 编码 → 部署，一个人走完全程。3 款应用验证过，不是 PPT 里的能力。</span></div></li>
+          <li data-reveal style="--d:.1s"><span class="mono v-no">b.</span><div><b>AI 落地深度</b><span>RAG 全链路、Multi-Agent 编排、MCP 工具生态、多模型路由、TTFT 端到端调优——都停在「度量与迭代」层面，不止会调 API。</span></div></li>
+          <li data-reveal style="--d:.15s"><span class="mono v-no">c.</span><div><b>产品与数据</b><span>PRD、优先级、指标体系是三年现场练出来的；能接住需求、讲清方案，也能对齐人、推进落地。</span></div></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PROJECTS ============ -->
+<section class="section" id="projects">
+  <div class="container">
+    <header class="sec-head" data-reveal>
+      <p class="sec-eyebrow mono">// 02 · 项目</p>
+      <h2 class="sec-title">三个项目，三种技术栈，<br>同一件事：做完，上线，可验证</h2>
+    </header>
+  </div>
+
+  <!-- P01 Wide Thought Host -->
+  <article class="project" id="p-wth">
+    <div class="container proj-grid">
+      <div class="proj-text">
+        <div class="proj-head" data-reveal>
+          <span class="proj-index mono">01</span>
+          <div>
+            <p class="proj-meta mono">核心贡献者 · 2026.05 — 至今 · 开源</p>
+            <h3>Wide Thought Host</h3>
+            <p class="proj-tag">开源 AI 编码 Agent 桌面应用</p>
+          </div>
+        </div>
+        <p class="proj-sum" data-reveal>一个隐私优先的 AI 编码 Agent 运行时（CLI + Desktop 双形态）。我在其中主导核心架构与 Agent 子系统的设计与实现。</p>
+        <ul class="proj-points">
+          <li data-reveal><b>架构设计</b><span>抽象多模型统一接入层，屏蔽 OpenAI / Claude / DeepSeek / Ollama 的 API 差异，运行时动态切换；按场景评估能力边界、Token 成本与延迟。</span></li>
+          <li data-reveal style="--d:.06s"><b>Agent 系统</b><span>从零实现子智能体全生命周期——创建 / 配置 / 委派 / 回收。提示词、模型、工具范围（Tool Scope）三级配置，复杂任务自动分解后并行执行。</span></li>
+          <li data-reveal style="--d:.12s"><b>工具生态与权限</b><span>插件化工具框架（Shell / Git / LSP / MCP / Web Search）+ 细粒度权限控制；新增 15+ 核心模块，管理 70+ Rust Crate 依赖。</span></li>
+          <li data-reveal style="--d:.18s"><b>工程治理</b><span>负责模块拆分、依赖治理与版本迭代，保障多模型 × 多工具并发场景下的稳定性与可扩展性。</span></li>
+        </ul>
+        <div class="proj-stats mono" data-reveal>
+          <div><b data-count="15" data-suffix="+">0</b><span>核心模块</span></div>
+          <div><b data-count="70" data-suffix="+">0</b><span>Rust Crate</span></div>
+          <div><b data-count="4">0</b><span>家模型厂商接入</span></div>
+          <div><b data-count="5">0</b><span>类插件化工具</span></div>
+        </div>
+        <div class="proj-links" data-reveal>
+          <a class="chip-link mono" href="https://github.com/Wan-1230/Wide-Thought-Host" target="_blank" rel="noopener">github.com/Wan-1230/Wide-Thought-Host<svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 12 12 4M6 4h6v6"/></svg></a>
+        </div>
+      </div>
+      <div class="proj-visual" data-reveal style="--d:.1s">
+        <div class="visual-card">
+          <svg class="wth-svg" viewBox="0 0 560 400" role="img" aria-label="Agent 编排架构图：主控节点通过统一接入层调度三个子智能体，底部为插件化工具生态">
+            <!-- wires -->
+            <g class="wire">
+              <path d="M280,80 C280,140 360,57 400,57"/>
+              <path d="M280,80 C280,150 360,177 400,177"/>
+              <path d="M280,80 C280,180 360,297 400,297"/>
+              <path d="M280,80 L280,334"/>
+              <path d="M66,334 L482,334"/>
+              <path d="M66,334 L66,346"/><path d="M170,334 L170,346"/><path d="M274,334 L274,346"/><path d="M378,334 L378,346"/><path d="M482,334 L482,346"/>
+            </g>
+            <!-- flowing dashes -->
+            <g class="flow">
+              <path d="M280,80 C280,140 360,57 400,57"/>
+              <path d="M280,80 C280,150 360,177 400,177"/>
+              <path d="M280,80 C280,180 360,297 400,297"/>
+              <path d="M280,80 L280,334"/>
+            </g>
+            <!-- moving packets -->
+            <g class="m-dot">
+              <circle r="2.6"><animateMotion dur="3s" begin="0s" repeatCount="indefinite" path="M280,80 C280,140 360,57 400,57"/></circle>
+              <circle r="2.6"><animateMotion dur="3.6s" begin="-1.2s" repeatCount="indefinite" path="M280,80 C280,150 360,177 400,177"/></circle>
+              <circle r="2.6"><animateMotion dur="3.2s" begin="-2s" repeatCount="indefinite" path="M280,80 C280,180 360,297 400,297"/></circle>
+              <circle r="2.6"><animateMotion dur="2.4s" begin="-.6s" repeatCount="indefinite" path="M280,80 L280,334"/></circle>
+            </g>
+            <!-- orchestrator -->
+            <g class="nd nd-main">
+              <rect x="175" y="16" width="210" height="64" rx="9"/>
+              <text x="280" y="41" class="nt">Orchestrator · 主控</text>
+              <text x="280" y="62" class="ndim">OpenAI · Claude · DeepSeek · Ollama</text>
+            </g>
+            <!-- sub agents -->
+            <g class="nd"><rect x="400" y="30" width="140" height="54" rx="9"/><text x="470" y="51" class="nt">Sub-Agent A</text><text x="470" y="69" class="ndim">任务分解</text></g>
+            <g class="nd"><rect x="400" y="150" width="140" height="54" rx="9"/><text x="470" y="171" class="nt">Sub-Agent B</text><text x="470" y="189" class="ndim">并行执行</text></g>
+            <g class="nd"><rect x="400" y="270" width="140" height="54" rx="9"/><text x="470" y="291" class="nt">Sub-Agent C</text><text x="470" y="309" class="ndim">结果回收</text></g>
+            <!-- tools -->
+            <g class="nd"><rect x="20" y="346" width="92" height="34" rx="7"/><text x="66" y="367" class="nt">Shell</text></g>
+            <g class="nd"><rect x="124" y="346" width="92" height="34" rx="7"/><text x="170" y="367" class="nt">Git</text></g>
+            <g class="nd"><rect x="228" y="346" width="92" height="34" rx="7"/><text x="274" y="367" class="nt">LSP</text></g>
+            <g class="nd"><rect x="332" y="346" width="92" height="34" rx="7"/><text x="378" y="367" class="nt">MCP</text></g>
+            <g class="nd"><rect x="436" y="346" width="92" height="34" rx="7"/><text x="482" y="367" class="nt">Web Search</text></g>
+            <text x="20" y="394" class="ndim tlabel">工具生态 · 细粒度 Tool Scope 权限控制</text>
+          </svg>
+          <p class="visual-cap mono">子智能体全生命周期：创建 → 配置 → 委派 → 回收 · 三级配置（提示词 / 模型 / 工具范围）</p>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- P02 AI 面试宝典 -->
+  <article class="project project--flip" id="p-rag">
+    <div class="container proj-grid">
+      <div class="proj-text">
+        <div class="proj-head" data-reveal>
+          <span class="proj-index mono">02</span>
+          <div>
+            <p class="proj-meta mono">独立开发 · 2026.06 — 2026.07 · 已上线</p>
+            <h3>AI 面试宝典</h3>
+            <p class="proj-tag">基于 RAG 的 AI 面试准备平台</p>
+          </div>
+        </div>
+        <p class="proj-sum" data-reveal>从 RAG 管道到流式输出再到部署，一个人做完的全栈 AI 应用——现在就能打开用。</p>
+        <ul class="proj-points">
+          <li data-reveal><b>RAG 全链路</b><span>独立实现「文档解析 → 分块 → Embedding → ChromaDB 向量入库 → 语义检索 → LLM 流式生成（SSE）」，307 篇文档入库，覆盖 27 篇 AI 文章与 255 道面试题库的精准召回。</span></li>
+          <li data-reveal style="--d:.06s"><b>性能优化</b><span>围绕召回准确率与首字响应延迟（TTFT）端到端调优：分块策略、检索 top-k 与相似度阈值、流式输出改造。</span></li>
+          <li data-reveal style="--d:.12s"><b>功能闭环</b><span>AI 简历优化（多格式上传 → JD 匹配 → 结构化改写建议）+ 题库练习（分类 / 计时 / 自动判分 / 错题解析），形成「检索 → 问答 → 诊断 → 练习」闭环。</span></li>
+          <li data-reveal style="--d:.18s"><b>全栈与部署</b><span>React / TS 前端 + Node / Express 后端、接口设计、前后端联调与线上排查；Cloudflare Pages + Railway 部署上线。</span></li>
+        </ul>
+        <div class="proj-stats mono" data-reveal>
+          <div><b data-count="307">0</b><span>篇向量化文档</span></div>
+          <div><b data-count="255">0</b><span>道题库精准召回</span></div>
+          <div><b data-count="27">0</b><span>篇 AI 文章覆盖</span></div>
+          <div><b data-count="1">0</b><span>次独立全栈交付</span></div>
+        </div>
+        <div class="proj-links" data-reveal>
+          <a class="chip-link chip-link--live mono" href="https://ai-interview-6rn.pages.dev" target="_blank" rel="noopener"><i class="dot"></i>在线体验：ai-interview-6rn.pages.dev<svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 12 12 4M6 4h6v6"/></svg></a>
+          <a class="chip-link mono" href="https://github.com/Wan-1230/ai-resume" target="_blank" rel="noopener">github.com/Wan-1230/ai-resume<svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 12 12 4M6 4h6v6"/></svg></a>
+        </div>
+      </div>
+      <div class="proj-visual" data-reveal style="--d:.1s">
+        <div class="visual-card">
+          <svg class="rag-svg" viewBox="0 0 560 96" role="img" aria-label="RAG 管道：文档解析、分块、Embedding、向量检索、LLM 生成">
+            <g class="wire">
+              <path d="M104,48 L120,48"/><path d="M216,48 L232,48"/><path d="M328,48 L344,48"/><path d="M440,48 L456,48"/>
+            </g>
+            <g class="flow">
+              <path d="M104,48 L120,48"/><path d="M216,48 L232,48"/><path d="M328,48 L344,48"/><path d="M440,48 L456,48"/>
+            </g>
+            <g class="m-dot"><circle r="3"><animateMotion dur="4.5s" begin="0s" repeatCount="indefinite" path="M56,48 L504,48"/></circle></g>
+            <g class="nd"><rect x="8" y="28" width="96" height="40" rx="8"/><text x="56" y="52" class="nt">文档解析</text></g>
+            <g class="nd"><rect x="120" y="28" width="96" height="40" rx="8"/><text x="168" y="52" class="nt">分块 Chunking</text></g>
+            <g class="nd"><rect x="232" y="28" width="96" height="40" rx="8"/><text x="280" y="52" class="nt">Embedding</text></g>
+            <g class="nd"><rect x="344" y="28" width="96" height="40" rx="8"/><text x="392" y="52" class="nt">向量检索</text></g>
+            <g class="nd"><rect x="456" y="28" width="96" height="40" rx="8"/><text x="504" y="52" class="nt">LLM 生成</text></g>
+          </svg>
+          <div class="chat">
+            <div class="chat-bar mono"><span>ai-interview · 对话</span><span class="chat-badge">SSE 流式</span></div>
+            <div class="chat-body">
+              <div class="msg msg-user mono">「这份项目经历怎么改，才能过 AI 岗的简历筛选？」</div>
+              <div class="msg msg-ai"><span id="chatText"></span><span class="caret" id="chatCaret"></span></div>
+            </div>
+            <div class="chat-status mono" id="chatStatus">sse: streaming · chunk 512 · top-k 5 · ttft 0.42s</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- P03 N-Link -->
+  <article class="project" id="p-nlink">
+    <div class="container proj-grid">
+      <div class="proj-text">
+        <div class="proj-head" data-reveal>
+          <span class="proj-index mono">03</span>
+          <div>
+            <p class="proj-meta mono">独立开发 · 2026.07 — 至今 · v0.1.4 已发布</p>
+            <h3>N-Link</h3>
+            <p class="proj-tag">尼康相机「永不断联」伴侣 App（Android）</p>
+          </div>
+        </div>
+        <p class="proj-sum" data-reveal>官方 SnapBridge 频繁断联没人在意，我拆了它的四类根因，自己做了一个稳的。</p>
+        <ul class="proj-points">
+          <li data-reveal><b>问题定义</b><span>拆解竞品四类根因——频繁断联 / 后台被杀 / Wi-Fi 切换脆弱 / 无自动重连，确立「稳、快、全、简」的差异化定位与功能边界。</span></li>
+          <li data-reveal style="--d:.06s"><b>核心实现</b><span>BLE 发现 + Wi-Fi 高速传输 + USB 有线的多通道连接调度与断线自动重连；基于 PTP/USB 协议完成相机参数读写与遥控拍摄（半按对焦 / 全按 / 间隔 / B 门）。</span></li>
+          <li data-reveal style="--d:.12s"><b>功能交付</b><span>拍完即传、选择性下载、Live View 监看与触摸对焦、参数管理四大模块；40+ 能力项按 P0/P1/P2 排期，8 周交付 MVP。</span></li>
+          <li data-reveal style="--d:.18s"><b>质量与迭代</b><span>定义并持续跟踪 24h 连接保持率、传输成功率、Live View 延迟、快门响应四项核心指标，制定四阶段 Roadmap 按指标验收。</span></li>
+        </ul>
+        <div class="proj-stats mono" data-reveal>
+          <div><b data-count="14000" data-format="comma">0</b><span>行 Kotlin 代码</span></div>
+          <div><b data-count="3">0</b><span>通道连接调度</span></div>
+          <div><b data-count="40" data-suffix="+">0</b><span>能力项排期</span></div>
+          <div><b data-count="8">0</b><span>周交付 MVP</span></div>
+        </div>
+        <div class="proj-links" data-reveal>
+          <a class="chip-link mono" href="https://github.com/Wan-1230" target="_blank" rel="noopener">github.com/Wan-1230<svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 12 12 4M6 4h6v6"/></svg></a>
+        </div>
+      </div>
+      <div class="proj-visual" data-reveal style="--d:.1s">
+        <div class="visual-card visual-card--nlink">
+          <div class="nlink-stage">
+            <svg class="nlink-svg" viewBox="0 0 150 340" aria-hidden="true">
+              <g class="flow flow-ble"><path d="M64,60 C96,60 96,150 138,158"/></g>
+              <g class="flow flow-wifi"><path d="M64,170 C96,170 96,172 138,172"/></g>
+              <g class="flow flow-usb"><path d="M64,280 C96,280 96,196 138,186"/></g>
+              <g class="nchip"><rect x="0" y="46" width="64" height="28" rx="6"/><text x="32" y="64" class="nt" style="fill:#86b97e">BLE</text></g>
+              <g class="nchip"><rect x="0" y="156" width="64" height="28" rx="6"/><text x="32" y="174" class="nt" style="fill:#e8a33d">Wi-Fi</text></g>
+              <g class="nchip"><rect x="0" y="266" width="64" height="28" rx="6"/><text x="32" y="284" class="nt" style="fill:#7f9bb8">USB</text></g>
+            </svg>
+            <div class="phone">
+              <div class="phone-screen">
+                <div class="phone-top mono"><span>N-Link <em>v0.1.4</em></span><span class="conn"><i class="dot"></i>已连接</span></div>
+                <div class="phone-log mono" id="phoneLog"></div>
+                <div class="phone-foot mono">多通道调度 · 断线自动重连</div>
+              </div>
+            </div>
+          </div>
+          <ul class="nlink-metrics mono">
+            <li>24h 连接保持率</li>
+            <li>传输成功率</li>
+            <li>Live View 延迟</li>
+            <li>快门响应</li>
+          </ul>
+          <p class="visual-cap mono">核心指标体系：定义 → 采集 → 按指标验收迭代（四阶段 Roadmap）</p>
+        </div>
+      </div>
+    </div>
+  </article>
+</section>
+
+<!-- ============ STACK ============ -->
+<section class="section" id="stack">
+  <div class="container">
+    <header class="sec-head" data-reveal>
+      <p class="sec-eyebrow mono">// 03 · 技术栈</p>
+      <h2 class="sec-title">每一项都挂着具体的项目，<br>不是简历关键词堆砌</h2>
+      <p class="sec-hint mono">悬停标签可查看「用在哪」</p>
+    </header>
+    <div class="stack-grid">
+      <div class="stack-cat" data-reveal>
+        <h3 class="mono">大模型与 AI 应用</h3>
+        <ul>
+          <li class="tag" tabindex="0" data-note="AI 面试宝典 · 307 篇文档生产实践">RAG 全链路</li>
+          <li class="tag" tabindex="0" data-note="Wide Thought Host · 子智能体全生命周期">Multi-Agent 编排</li>
+          <li class="tag" tabindex="0" data-note="WTH · 插件化工具接入">MCP</li>
+          <li class="tag" tabindex="0" data-note="WTH · 工具调用与权限边界">Function Calling / Tool Use</li>
+          <li class="tag" tabindex="0" data-note="System Prompt 设计 · 结构化输出 · 迭代评估">Prompt 工程</li>
+          <li class="tag" tabindex="0" data-note="面试宝典 · 生产环境使用">ChromaDB</li>
+          <li class="tag" tabindex="0" data-note="面试宝典 · 流式生成改造">SSE 流式输出</li>
+          <li class="tag" tabindex="0" data-note="WTH · 统一接入层动态路由">多模型路由</li>
+          <li class="tag" tabindex="0" data-note="面试宝典 · 首字延迟端到端调优">TTFT 优化</li>
+        </ul>
+      </div>
+      <div class="stack-cat" data-reveal style="--d:.06s">
+        <h3 class="mono">语言</h3>
+        <ul>
+          <li class="tag" tabindex="0" data-note="WTH · 70+ Crate 依赖治理">Rust</li>
+          <li class="tag" tabindex="0" data-note="面试宝典 · 前后端全栈">TypeScript</li>
+          <li class="tag" tabindex="0" data-note="N-Link · 1.4 万行 Android">Kotlin</li>
+          <li class="tag" tabindex="0" data-note="脚本 · 数据处理">Python</li>
+          <li class="tag" tabindex="0" data-note="3 年现场数据体系">SQL</li>
+          <li class="tag" tabindex="0" data-note="毕设 · DSP 嵌入式逆变器">C</li>
+        </ul>
+      </div>
+      <div class="stack-cat" data-reveal style="--d:.12s">
+        <h3 class="mono">前端</h3>
+        <ul>
+          <li class="tag" tabindex="0" data-note="面试宝典">React</li>
+          <li class="tag" tabindex="0" data-note="面试宝典 · 组件化">Tailwind CSS</li>
+          <li class="tag" tabindex="0" data-note="面试宝典 · 接口联调">RESTful 对接</li>
+          <li class="tag" tabindex="0" data-note="本页 · 手写 CSS，无框架">响应式开发</li>
+        </ul>
+      </div>
+      <div class="stack-cat" data-reveal style="--d:.06s">
+        <h3 class="mono">后端与部署</h3>
+        <ul>
+          <li class="tag" tabindex="0" data-note="面试宝典 · Express 服务">Node.js / Express</li>
+          <li class="tag" tabindex="0" data-note="面试宝典 · 接口设计">API 设计</li>
+          <li class="tag" tabindex="0" data-note="日常开发环境">Linux</li>
+          <li class="tag" tabindex="0" data-note="3 年工程实践">Git</li>
+          <li class="tag" tabindex="0" data-note="容器化部署">Docker</li>
+          <li class="tag" tabindex="0" data-note="面试宝典 · 前端托管">Cloudflare Pages</li>
+          <li class="tag" tabindex="0" data-note="面试宝典 · 后端托管">Railway</li>
+          <li class="tag" tabindex="0" data-note="自动化构建发布">CI/CD</li>
+        </ul>
+      </div>
+      <div class="stack-cat" data-reveal style="--d:.12s">
+        <h3 class="mono">硬件通信</h3>
+        <ul>
+          <li class="tag" tabindex="0" data-note="N-Link · 设备发现">BLE</li>
+          <li class="tag" tabindex="0" data-note="N-Link · 高速传输通道">Wi-Fi</li>
+          <li class="tag" tabindex="0" data-note="N-Link · 有线连接">USB</li>
+          <li class="tag" tabindex="0" data-note="N-Link · 相机参数与遥控">PTP 协议</li>
+          <li class="tag" tabindex="0" data-note="N-Link · 三通道调度与重连">多通道调度</li>
+        </ul>
+      </div>
+      <div class="stack-cat" data-reveal style="--d:.18s">
+        <h3 class="mono">产品与数据</h3>
+        <ul>
+          <li class="tag" tabindex="0" data-note="三款应用均为独立立项">PRD / Roadmap</li>
+          <li class="tag" tabindex="0" data-note="现场与管理层访谈">用户访谈</li>
+          <li class="tag" tabindex="0" data-note="N-Link · SnapBridge 根因拆解">竞品分析</li>
+          <li class="tag" tabindex="0" data-note="N-Link · 四项核心指标">指标体系</li>
+          <li class="tag" tabindex="0" data-note="40+ 能力项排期">P0/P1/P2 优先级</li>
+          <li class="tag" tabindex="0" data-note="3 年甲方 / 监理 / 施工协调">跨部门推进</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ JOURNEY ============ -->
+<section class="section" id="journey">
+  <div class="container">
+    <header class="sec-head" data-reveal>
+      <p class="sec-eyebrow mono">// 04 · 经历</p>
+      <h2 class="sec-title">从工程现场到 AI 应用</h2>
+      <p class="sec-note">现场教会我的是把复杂系统拆到能落地；AI 是我现在最想把它做完的事。</p>
+    </header>
+    <ol class="timeline">
+      <li data-reveal>
+        <span class="tl-time mono">2026.07 — 至今</span>
+        <div class="tl-body"><h3>N-Link · 独立开发</h3><p>Kotlin / Android，约 1.4 万行代码，v0.1.4 已发布。多通道连接调度 + PTP 遥控，按四项核心指标迭代。</p></div>
+      </li>
+      <li data-reveal style="--d:.05s">
+        <span class="tl-time mono">2026.06 — 2026.07</span>
+        <div class="tl-body"><h3>AI 面试宝典 · 独立开发</h3><p>RAG 全链路 + 全栈交付，Cloudflare Pages + Railway 上线，307 篇文档向量化、255 道题库精准召回。</p></div>
+      </li>
+      <li data-reveal style="--d:.1s">
+        <span class="tl-time mono">2026.05 — 至今</span>
+        <div class="tl-body"><h3>Wide Thought Host · 核心贡献者</h3><p>开源 AI 编码 Agent（Rust）。多模型统一接入、子智能体全生命周期、MCP 插件生态，15+ 核心模块。</p></div>
+      </li>
+      <li data-reveal style="--d:.15s">
+        <span class="tl-time mono">2023.07 — 2026.04</span>
+        <div class="tl-body"><h3>中建三局二公司 · 项目技术工程师</h3><p>数据体系 0 → 1，趋势分析与异常检测，单次避免直接损失 50 万元+；主导试样台账系统，试验周期 24h → 4h（效率提升 83%）；3 年甲方 / 监理 / 施工跨部门推进，间接节省约 60 万元。</p></div>
+      </li>
+      <li data-reveal style="--d:.2s">
+        <span class="tl-time mono">2019.09 — 2023.07</span>
+        <div class="tl-body"><h3>河南科技大学 · 电气工程及其自动化</h3><p>GPA 3.58/4.0 · 学生会副主席 · 挑战杯。毕业设计《基于 DSP 的嵌入式逆变器设计》——嵌入式 C 与电力电子调试。</p></div>
+      </li>
+    </ol>
+  </div>
+</section>
+
+</main>
+
+<!-- ============ CONTACT / FOOTER ============ -->
+<footer class="footer" id="contact">
+  <div class="container">
+    <p class="sec-eyebrow mono" data-reveal>// 05 · 联系</p>
+    <h2 class="footer-title" data-reveal>如果你在找能独立把<br>AI 应用做到上线的人——<em>聊聊？</em></h2>
+    <p class="footer-sub" data-reveal>求职意向：AI 应用开发 / AI Agent 开发 / 大模型应用开发（全职）· 青岛 / 远程 · 随时到岗。邮件 24 小时内一定回。</p>
+    <div class="contact-row" data-reveal>
+      <button class="contact-chip mag" data-copy="wth123500@qq.com" type="button">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+        <span class="mono">wth123500@qq.com</span><span class="copy-hint mono">点击复制</span>
+      </button>
+      <button class="contact-chip mag" data-copy="17615123354" type="button">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.9.34 1.78.65 2.63a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.45-1.22a2 2 0 0 1 2.11-.45c.85.31 1.73.53 2.63.65A2 2 0 0 1 22 16.92z"/></svg>
+        <span class="mono">176 1512 3354</span><span class="copy-hint mono">点击复制</span>
+      </button>
+      <a class="contact-chip mag" href="https://github.com/Wan-1230" target="_blank" rel="noopener">
+        <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
+        <span class="mono">github.com/Wan-1230</span>
+      </a>
+    </div>
+    <div class="footer-bottom mono">
+      <span>© 2026 万天昊</span>
+      <span>本页 0 依赖 · 0 构建 · 全部动效手写实现</span>
+      <span>青岛 · 可远程</span>
+    </div>
+  </div>
+</footer>
+
+<div class="toast mono" id="toast" role="status" aria-live="polite"></div>
+<script src="assets/main.js"></script>
+</body>
+</html>
