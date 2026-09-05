@@ -7,8 +7,9 @@
   --bg: #0f0e0b;
   --bg-2: #131109;
   --bg-3: #17150f;
-  --line: #282318;
-  --line-2: #3a331f;
+  /* 半透明 hairline：昂贵感的关键一层（替换实色边线） */
+  --line: rgba(234, 228, 214, 0.08);
+  --line-2: rgba(234, 228, 214, 0.17);
   --ink: #eae4d6;
   --ink-2: #a89f8d;
   --ink-3: #6f6857;
@@ -42,15 +43,15 @@ body {
   overflow-x: hidden;
 }
 
-/* 胶片噪点，压住纯色背景的塑料感 */
+/* 胶片颗粒，压住纯色背景的塑料感（细颗粒 + 4 octaves） */
 body::before {
   content: "";
   position: fixed;
   inset: -50%;
   z-index: 9990;
   pointer-events: none;
-  opacity: 0.05;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   animation: grain 9s steps(6) infinite;
 }
 @keyframes grain {
@@ -111,11 +112,11 @@ button { font: inherit; color: inherit; background: none; border: 0; }
 .fp-dot {
   width: 8px; height: 8px;
   border-radius: 99px;
-  background: #3a331f;
+  background: rgba(234, 228, 214, 0.16);
   padding: 0;
   transition: height 0.35s var(--ease), background 0.25s;
 }
-.fp-dot:hover { background: var(--ink-3); }
+.fp-dot:hover { background: rgba(234, 228, 214, 0.4); }
 .fp-dot.is-active { height: 24px; background: var(--amber); }
 @media (min-width: 1024px) and (pointer: fine) {
   .fp-dots { display: flex; }
@@ -216,6 +217,15 @@ button { font: inherit; color: inherit; background: none; border: 0; }
 }
 #dotGrid { position: absolute; inset: 0; width: 100%; height: 100%; }
 
+/* vignette：把视觉焦点压向左侧的名字区 */
+.hero::after {
+  content: "";
+  position: absolute; inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: radial-gradient(ellipse 92% 74% at 34% 42%, transparent 44%, rgba(10, 9, 6, 0.74) 100%);
+}
+
 .hero-inner {
   position: relative; z-index: 2;
   display: grid;
@@ -229,9 +239,9 @@ button { font: inherit; color: inherit; background: none; border: 0; }
 .hero-name {
   font-size: clamp(64px, 10vw, 132px);
   font-weight: 800;
-  line-height: 1.02;
-  letter-spacing: 0.03em;
-  margin-left: -0.05em;
+  line-height: 0.95;
+  letter-spacing: -0.015em;
+  margin-left: -0.04em;
 }
 
 .hero-role { font-size: clamp(17px, 1.6vw, 21px); font-weight: 600; margin-top: 14px; }
@@ -334,7 +344,7 @@ button { font: inherit; color: inherit; background: none; border: 0; }
   background: rgba(16, 14, 10, 0.92);
   -webkit-backdrop-filter: blur(6px);
   backdrop-filter: blur(6px);
-  box-shadow: 0 30px 80px -30px rgba(0, 0, 0, 0.8);
+  box-shadow: 0 30px 80px -30px rgba(10, 8, 4, 0.85);
   overflow: hidden;
 }
 .term-bar {
@@ -433,12 +443,13 @@ button { font: inherit; color: inherit; background: none; border: 0; }
 }
 #stack .container, #stack .sec-head, .footer .container { position: relative; z-index: 1; }
 
-.sec-eyebrow { font-size: 13px; color: var(--amber); letter-spacing: 0.08em; margin-bottom: 18px; }
+.sec-eyebrow { font-size: 13px; color: var(--amber); letter-spacing: 0.18em; margin-bottom: 18px; }
 .sec-title {
   font-size: clamp(30px, 4.2vw, 46px);
   font-weight: 700;
-  line-height: 1.28;
-  letter-spacing: 0.01em;
+  line-height: 1.18;
+  letter-spacing: -0.012em;
+  text-wrap: balance;
 }
 .sec-head { margin-bottom: clamp(48px, 6vw, 72px); }
 .sec-note { margin-top: 18px; color: var(--ink-2); font-size: 16px; max-width: 36em; }
@@ -511,7 +522,7 @@ button { font: inherit; color: inherit; background: none; border: 0; }
 .proj-index {
   font-size: 60px; font-weight: 700; line-height: 1;
   color: transparent;
-  -webkit-text-stroke: 1.2px #4a4128;
+  -webkit-text-stroke: 1.2px rgba(232, 163, 61, 0.4);
   letter-spacing: 0.02em;
   transition: -webkit-text-stroke-color 0.4s, color 0.4s;
 }
@@ -769,8 +780,10 @@ button { font: inherit; color: inherit; background: none; border: 0; }
 .footer-title {
   font-size: clamp(32px, 5vw, 56px);
   font-weight: 700;
-  line-height: 1.3;
+  line-height: 1.22;
+  letter-spacing: -0.012em;
   max-width: 18em;
+  text-wrap: balance;
 }
 .footer-title em {
   font-style: normal;
@@ -871,6 +884,40 @@ html.has-cursor, html.has-cursor * { cursor: none !important; }
 
 /* 磁吸按钮 */
 .mag { will-change: transform; }
+
+/* 无障碍：跳到内容 */
+.skip-link {
+  position: fixed; top: -52px; left: 16px; z-index: 1002;
+  padding: 11px 18px;
+  border-radius: 10px;
+  background: var(--amber);
+  color: #171307;
+  font-size: 14px; font-weight: 600;
+  transition: top 0.25s var(--ease);
+}
+.skip-link:focus-visible { top: 12px; }
+
+/* ============ 404 页 ============ */
+.nf {
+  min-height: 100vh;
+  min-height: 100svh;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  text-align: center;
+  padding: 24px;
+}
+.nf-cmd { font-size: 14px; color: var(--green); margin-bottom: 10px; }
+.nf-code {
+  font-family: var(--mono);
+  font-size: clamp(120px, 26vw, 280px);
+  font-weight: 700;
+  line-height: 0.9;
+  color: transparent;
+  -webkit-text-stroke: 2px rgba(232, 163, 61, 0.45);
+  letter-spacing: -0.03em;
+}
+.nf-msg { margin: 26px 0 34px; color: var(--ink-2); font-size: 16.5px; }
 
 /* ============ 响应式 ============ */
 @media (max-width: 1080px) {

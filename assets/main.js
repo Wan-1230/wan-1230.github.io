@@ -14,10 +14,9 @@
      默认跟随系统「减少动画」设置（prefers-reduced-motion），
      用户可点右上角「动效」按钮强制开/关，选择存 localStorage 即时生效。
      注意：整屏滚动是导航行为，不在此开关内，仅动效时长变化。 */
-  const prefersReduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   let fxOn = null;
   try { fxOn = localStorage.getItem("fx"); } catch {}
-  if (fxOn === null) fxOn = prefersReduce ? "0" : "1";
+  if (fxOn === null) fxOn = "1";   // 默认开启动效（仅当用户手动关闭过才为 "0"）
   const motionOK = () => fxOn === "1";
   const motionOff = () => fxOn !== "1";
 
@@ -337,14 +336,14 @@
 
   const BOOT = [
     { cmd: "whoami" },
-    { out: ["万天昊 — AI 应用开发工程师（LLM / Agent 方向）", "3 款应用完整闭环 · 青岛 / 远程 · 随时到岗"] },
+    { out: ["万天昊 · AI 应用开发工程师（LLM / Agent 方向）", "3 款应用完整闭环 · 青岛 / 远程 · 随时到岗"] },
     { cmd: "ls ./projects" },
     { out: [
       "<span class='t-hl'>wide-thought-host/</span>   Rust · 开源 AI 编码 Agent（核心贡献者）",
       "<span class='t-hl'>ai-interview/</span>        RAG · 面试准备平台（已上线）",
       "<span class='t-hl'>n-link/</span>               Kotlin · 尼康相机伴侣 App（v0.1.4）"] },
     { cmd: "./status.sh --now" },
-    { out: ["<span class='t-ok'>[ok]</span> open to work — 正在看 AI 应用开发机会", "<span class='t-dim'>[tip] 输入 help，这个终端是真的能敲的</span>"] }
+    { out: ["<span class='t-ok'>[ok]</span> open to work：正在看 AI 应用开发机会", "<span class='t-dim'>[tip] 输入 help，这个终端是真的能敲的</span>"] }
   ];
 
   let booted = false;
@@ -375,9 +374,9 @@
     },
     projects() {
       print(
-        "<span class='t-hl'>01</span> Wide Thought Host — AI 编码 Agent（Rust · Multi-Agent · MCP）\n      <a class='t-link' href='https://github.com/Wan-1230/Wide-Thought-Host' target='_blank' rel='noopener'>github.com/Wan-1230/Wide-Thought-Host</a>\n" +
-        "<span class='t-hl'>02</span> AI 面试宝典 — RAG 面试平台（React · Node · ChromaDB）\n      <a class='t-link' href='https://ai-interview-6rn.pages.dev' target='_blank' rel='noopener'>ai-interview-6rn.pages.dev</a>\n" +
-        "<span class='t-hl'>03</span> N-Link — 尼康相机伴侣 App（Kotlin · BLE/Wi-Fi/USB · PTP）\n      <a class='t-link' href='https://github.com/Wan-1230' target='_blank' rel='noopener'>github.com/Wan-1230</a>"
+        "<span class='t-hl'>01</span> Wide Thought Host · AI 编码 Agent（Rust · Multi-Agent · MCP）\n      <a class='t-link' href='https://github.com/Wan-1230/Wide-Thought-Host' target='_blank' rel='noopener'>github.com/Wan-1230/Wide-Thought-Host</a>\n" +
+        "<span class='t-hl'>02</span> AI 面试宝典 · RAG 面试平台（React · Node · ChromaDB）\n      <a class='t-link' href='https://ai-interview-6rn.pages.dev' target='_blank' rel='noopener'>ai-interview-6rn.pages.dev</a>\n" +
+        "<span class='t-hl'>03</span> N-Link · 尼康相机伴侣 App（Kotlin · BLE/Wi-Fi/USB · PTP）\n      <a class='t-link' href='https://github.com/Wan-1230/N-link' target='_blank' rel='noopener'>github.com/Wan-1230/N-link</a>"
       );
     },
     stack() {
@@ -398,7 +397,7 @@
       );
     },
     "hire-me"() {
-      print("<span class='t-ok'>✓ 已收到</span> — 邮箱在下面，24 小时内一定回。<a class='t-link' href='mailto:wth123500@qq.com'>wth123500@qq.com</a>");
+      print("<span class='t-ok'>✓ 已收到</span>：邮箱在下面，24 小时内一定回。<a class='t-link' href='mailto:wth123500@qq.com'>wth123500@qq.com</a>");
     },
     clear() { termOut.innerHTML = ""; }
   };
@@ -420,7 +419,7 @@
     const key = lower.replace(/\s+/g, " ");
     const fn = CMDS[key] || (key === "hire me" ? CMDS["hire-me"] : null);
     if (fn) { fn(); return; }
-    print(`zsh: command not found: ${esc(input.split(" ")[0])} —— 试试 <span class='t-hl'>help</span>`, "t-err");
+    print(`zsh: command not found: ${esc(input.split(" ")[0])} ，试试 <span class='t-hl'>help</span>`, "t-err");
   }
 
   term.addEventListener("click", () => termInput.focus({ preventScroll: true }));
@@ -525,8 +524,8 @@
   const chatCaret = $("#chatCaret");
   const chatStatus = $("#chatStatus");
   const chatMsgs = [
-    "基于题库召回结果：建议把项目经历改成「动作 + 量化结果」结构——主导 RAG 全链路调优，分块策略 / top-k / 相似度阈值三处迭代，首字响应（TTFT）压进亚秒级，255 道高频题精准命中。",
-    "这份经历能过筛：有上线链接、有量化指标。建议补一个对比基线，例如召回 Top-3 命中率从 x% 提升到 y%——面试官最认这种闭环。",
+    "基于题库召回结果：建议把项目经历改成「动作 + 量化结果」结构：主导 RAG 全链路调优，分块策略 / top-k / 相似度阈值三处迭代，首字响应（TTFT）压进亚秒级，255 道高频题精准命中。",
+    "这份经历能过筛：有上线链接、有量化指标。建议补一个对比基线，例如召回 Top-3 命中率从 x% 提升到 y%，这种闭环面试官最认。",
     "结合 JD 关键词（RAG / Agent / 部署），把「负责开发」改成「独立交付」：文档解析 → 分块 → Embedding → 检索 → SSE 流式生成全链路，一人完成并部署上线。"
   ];
   let chatStarted = false;

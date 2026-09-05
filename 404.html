@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>404 · 页面不存在 — 万天昊</title>
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<link rel="stylesheet" href="/assets/style.css">
+</head>
+<body>
+
+<main class="nf">
+  <p class="nf-cmd mono">wan@qingdao:~$ cat ./404.html</p>
+  <div class="nf-code">404</div>
+  <p class="nf-msg">页面不存在。可能被移动了，或者从来没存在过。</p>
+  <a class="btn btn-primary mag" href="/">cd ~ 回到主页</a>
+</main>
+
+<script>
+  // 磁吸按钮（404 页独立轻量版）
+  if (matchMedia("(pointer: fine)").matches && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    document.querySelectorAll(".mag").forEach(el => {
+      el.addEventListener("mousemove", e => {
+        const r = el.getBoundingClientRect();
+        el.style.transform = `translate(${(e.clientX - r.left - r.width / 2) * 0.22}px, ${(e.clientY - r.top - r.height / 2) * 0.22}px)`;
+      });
+      el.addEventListener("mouseleave", () => { el.style.transform = ""; });
+    });
+  }
+</script>
+</body>
+</html>
