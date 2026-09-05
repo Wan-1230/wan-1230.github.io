@@ -770,12 +770,22 @@ button { font: inherit; color: inherit; background: none; border: 0; }
 .tl-body h3 { margin-top: 6px; font-size: 17.5px; font-weight: 600; }
 .tl-body p { margin-top: 6px; font-size: 14.5px; color: var(--ink-2); max-width: 40em; }
 
-/* ============ 页脚 / 联系 ============ */
+/* ============ 页脚 / 联系（占满整屏的独立一页） ============ */
 .footer {
   position: relative;
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
   border-top: 1px solid var(--line);
   background: linear-gradient(to bottom, var(--bg), #0c0b08);
-  padding: clamp(88px, 11vw, 140px) 0 36px;
+  padding: clamp(64px, 8vw, 96px) 0 30px;
+}
+.footer-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;   /* 主内容在整屏内垂直居中 */
 }
 .footer-title {
   font-size: clamp(32px, 5vw, 56px);
@@ -821,8 +831,8 @@ button { font: inherit; color: inherit; background: none; border: 0; }
 
 .footer-bottom {
   display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px;
-  margin-top: clamp(64px, 8vw, 96px);
-  padding-top: 24px;
+  margin-top: clamp(40px, 6vw, 72px);
+  padding-top: 22px;
   border-top: 1px solid var(--line);
   font-size: 12px;
   color: var(--ink-3);
@@ -1005,6 +1015,7 @@ html.fx-off, html.fx-off * { cursor: auto !important; }
   .term { display: none !important; }
   .js [data-reveal], .hero-copy > *, .hero-term { opacity: 1 !important; transform: none !important; }
   .hero { min-height: auto; padding: 40px 0; }
+  .footer { min-height: auto; }
   .section, .footer { padding: 40px 0; }
   .hero-stats, .proj-stats, .stack-grid { break-inside: avoid; }
   a { color: #111; }
